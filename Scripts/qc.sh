@@ -1,17 +1,20 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+
+
 
 function run_bbduk() {
-	for prefix in $(ls rawdata/ | rev | cut -c 8- | rev | uniq)
+	for prefix in $(ls rawdata/ | rev | cut -c 13- | rev | uniq)
 	do 
-		bbduk.sh in1=rawdata/"$prefix"1.fastq in2=rawdata/"$prefix"2.fastq out=trim/"$prefix"trim_1.fastq out2=trim/"prefix"trim_2.fastq minlength=5
+		bbduk.sh in1=rawdata/"$prefix"R1_001.fastq in2=rawdata/"$prefix"R2_001.fastq out=trim/"$prefix"R1_001_trim.fastq out2=trim/"$prefix"R2_001_trim.fastq minlength=50 qtrim=rl trimq=20
 	done
 }
 
 
 function run_bbmerge() {
-	for prefix in $(ls rawdata/ | rev | cut -c 8- | rev | uniq)
+	for prefix in $(ls rawdata/ | rev | cut -c 13- | rev | uniq)
 	do
-		bbmerge.sh in1=rawdata/"$prefix"1.fastq in2=rawdata/"$prefix"2.fastq out=output_bbmerge/"$prefix"merged_reads.fastq outu1=output_bbmerge/"$prefix"unmerged_R1.fastq outu2=output_bbmerge/"$prefix"unmerged_R2.fastq ouq=t 
+		bbmerge.sh in1=trim/"$prefix"R1_001_trim.fastq in2=trim/"$prefix"R2_001_trim.fastq out=output_bbmerge/"$prefix"merged_reads.fastq outu1=output_bbmerge/"$prefix"unmerged_R1.fastq outu2=output_bbmerge/"$prefix"unmerged_R2.fastq ouq=t 
 	done
 }
 
@@ -75,11 +78,14 @@ function to_trim_adapt() {
 
 
 
+
+
+
 #make.group(fasta=output_bbmerge/11VP10_lib176564_5287_merged_reads.fasta, groups=output_bbmerge/11VP10_lib176564_5287_2_merged_reads.fastq, output=output_bbmerge/11VP10_lib176564_5287_2_merged_reads.fastq.groups)
 
 # egrep '^CGCACCTGGACTGGAC.+TTCTGGCGCTGGACCATGGG$' output_bbmerge/10CF278a_lib176536_5287_2_merged_reads.fasta
 
-run_bbduk
+run_bbmerge
 
 
 #supprimer score qualités associés
