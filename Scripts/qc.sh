@@ -4,17 +4,17 @@
 
 
 function run_bbduk() {
-	for prefix in $(ls rawdata/ | rev | cut -c 13- | rev | uniq)
+	for prefix in $(ls rawdata/ | rev | cut -c 9- | rev | uniq)
 	do 
-		bbduk.sh in1=rawdata/"$prefix"R1_001.fastq in2=rawdata/"$prefix"R2_001.fastq out=trim/"$prefix"R1_001_trim.fastq out2=trim/"$prefix"R2_001_trim.fastq minlength=50 qtrim=rl trimq=20
+		bbduk.sh in1=rawdata/"$prefix"R1.fastq in2=rawdata/"$prefix"R2.fastq out=trim/"$prefix"R1_trim.fastq out2=trim/"$prefix"R2_trim.fastq minlength=50 qtrim=rl trimq=20
 	done
 }
 
 
 function run_bbmerge() {
-	for prefix in $(ls rawdata/ | rev | cut -c 13- | rev | uniq)
+	for prefix in $(ls rawdata/ | rev | cut -c 9- | rev | uniq)
 	do
-		bbmerge.sh in1=trim/"$prefix"R1_001_trim.fastq in2=trim/"$prefix"R2_001_trim.fastq out=output_bbmerge/"$prefix"merged_reads.fastq outu1=output_bbmerge/"$prefix"unmerged_R1.fastq outu2=output_bbmerge/"$prefix"unmerged_R2.fastq ouq=t 
+		bbmerge.sh in1=trim/"$prefix"R1_trim.fastq in2=trim/"$prefix"R2_trim.fastq out=output_bbmerge/"$prefix"merged_reads.fastq outu1=output_bbmerge/"$prefix"unmerged_R1.fastq outu2=output_bbmerge/"$prefix"unmerged_R2.fastq ouq=t 
 	done
 }
 
@@ -51,6 +51,7 @@ function fastq_to_fasta {
 }
 
 
+
 function rename_file() {
 	for file in $(ls output_bbmerge/*.fasta)
 	do
@@ -60,7 +61,7 @@ function rename_file() {
 	done
 }
 
-rename_file
+
 
 function bbmerge_to_fasta() {
 	for f in $(ls output_bbmerge/*fastq)
@@ -69,6 +70,7 @@ function bbmerge_to_fasta() {
 		mothur "#fastq.info(fastq=$f); make.group(fasta=current, groups=$f, output=$suf.groups)"
 	done
 }
+
 
 
 
@@ -81,6 +83,8 @@ function make_group() {
 	done
 }
 
+
+
 function rename_group_files() {
 	for f in $(ls output_bbmerge/*groups)
 	do
@@ -88,6 +92,9 @@ function rename_group_files() {
 	done
 
 }
+
+rename_group_files
+
 
 function to_trim_adapt() {
 	for f in $(ls output_bbmerge_trim_adapt/*fastq)
@@ -104,13 +111,12 @@ function run_ITSX() {
 	for f in $(ls output_bbmerge/FILTRE*fasta )
 	do
 		((count++))
-		ITSx -i "$f" -o ITSX/FILTRE"$count"
+		ITSx -i "$f" -o ITSX/FILTRE"$count" --save_regions all
 	done
 }
 
 
 
-run_ITSX
 
 
 
